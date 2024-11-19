@@ -35,7 +35,7 @@ describe("MovieDetails Server Component", () => {
         query: {},
       });
     });
-  const mockParams = { id: "12345" } as unknown as Promise<any>;
+  const mockParams = { id: "12345" } as unknown as Promise<{id:string}>;
   const mockMovie = {
     title: "Inception",
     tagline: "Your mind is the scene of the crime.",
