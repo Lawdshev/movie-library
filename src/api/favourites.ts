@@ -1,27 +1,49 @@
 import { IMovie } from "@/utils/types";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const useFavorites = () => {
-  const _savedFavorites = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("favorites")??"") : []
-
-  const [favorites, setFavorites] = useState<IMovie[]>(_savedFavorites);
+  const [favourite, setFavourite] = useState<IMovie[]>([]);
+  const [loaded,setLoaded] = useState(false)
+  const initialRender = useRef(true);
 
   useEffect(() => {
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-  }, [favorites]);
+    setLoaded(true)
+    const storedFavourite = localStorage.getItem("favourites");
+    if (storedFavourite) {
+      const parsedFavourite = JSON.parse(storedFavourite);
+      const uniqueSet = new Set([...favourite, ...parsedFavourite]);
+      setFavourite(Array.from(uniqueSet));
+    }
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    setLoaded(true);
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
+    }
+    window.localStorage.setItem("favourites", JSON.stringify(favourite));
+    setLoaded(true);
+  }, [favourite]);
+
+  useEffect(() => {
+    localStorage.setItem("favourite", JSON.stringify(favourite));
+  }, [favourite]);
 
   // Add or remove a movie from favorites
   const toggleFavorite = (movie: IMovie) => {
-      const isFavorite = favorites.some((fav) => fav.id === movie.id);
-      if (isFavorite) {
-          setFavorites(favorites.filter((fav) => fav.id !== movie.id));
-      } else {
-          setFavorites([...favorites, movie]);
-      }
+    const isFavorite = favourite.some((fav) => fav.id === movie.id);
+    if (isFavorite) {
+      setFavourite(favourite.filter((fav) => fav.id !== movie.id));
+    } else {
+      setFavourite([...favourite, movie]);
+    }
   };
 
   return {
-    favorites,
+    favorites: favourite,
+    loaded,
     toggleFavorite,
   };
 };
