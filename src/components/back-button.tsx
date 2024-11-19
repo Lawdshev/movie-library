@@ -11,6 +11,7 @@ const BackButton = () => {
     <button
       onClick={goBack}
       className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600"
+      data-testid="back-button"
     >
       Back
     </button>

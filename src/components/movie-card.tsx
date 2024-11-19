@@ -7,12 +7,13 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 const MovieCard = ({ movie }: { movie: IMovie }) => {
   const { favorites, toggleFavorite } = useFavorites();
-  console.log(favorites)
+
     const isFavorite = favorites.some((fav) => fav.id === movie.id);
   return (
     <div
       key={movie.id}
       className="border p-2 rounded shadow hover:shadow-lg transition"
+      data-testid="movie-card"
     >
       <a href={`/movies/${movie.id}`}>
         <img
@@ -35,9 +36,9 @@ const MovieCard = ({ movie }: { movie: IMovie }) => {
         }`}
       >
         {isFavorite ? (
-          <FaHeart className="text-white" />
+          <FaHeart data-testid="favorite-icon" className="text-white" />
         ) : (
-          <FaRegHeart className="text-black" />
+          <FaRegHeart data-testid="favorite-icon" className="text-black" />
         )}
       </button>
     </div>

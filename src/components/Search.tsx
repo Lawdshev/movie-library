@@ -31,7 +31,7 @@ const Search = () => {
         }}
         defaultValue={searchParams.get("query")?.toString()}
       />
-      <FaSearch />
+      <FaSearch data-testid="search-icon" />
     </div>
   );
 };

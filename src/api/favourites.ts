@@ -1,12 +1,10 @@
 import { IMovie } from "@/utils/types";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 
 const useFavorites = () => {
   const _savedFavorites = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("favorites")??"") : []
-  const savedFavorites = useMemo(() => {
-    return _savedFavorites || []
-  },[])
-  const [favorites, setFavorites] = useState<IMovie[]>(savedFavorites);
+
+  const [favorites, setFavorites] = useState<IMovie[]>(_savedFavorites);
 
   useEffect(() => {
     localStorage.setItem("favorites", JSON.stringify(favorites));
