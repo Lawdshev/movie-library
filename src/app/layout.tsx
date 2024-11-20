@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Link from "next/link";
+import { FavouriteProvider } from "@/providers/Favorite-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,23 +30,25 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 text-gray-900`}
       >
-          <header className="p-4 bg-gray-800 text-white">
-            <div className="container mx-auto flex justify-between items-center">
-              <h1 className="text-xl font-bold">
-                <Link href="/">🎥 Movie Library</Link>
-              </h1>
-              <nav>
-                <Link href="/" className="mr-4 hover:underline">
-                  Popular Movies
-                </Link>
-                <Link href="/favorites" className="hover:underline">
-                  Favorite Movies
-                </Link>
-              </nav>
-            </div>
-          </header>
-          <main className="container mx-auto py-6">{children}</main>
-        </body>
+        <header className="p-4 bg-gray-800 text-white">
+          <div className="container mx-auto flex justify-between items-center">
+            <h1 className="text-xl font-bold">
+              <Link href="/">🎥 Movie Library</Link>
+            </h1>
+            <nav>
+              <Link href="/" className="mr-4 hover:underline">
+                Popular Movies
+              </Link>
+              <Link href="/favorites" className="hover:underline">
+                Favorite Movies
+              </Link>
+            </nav>
+          </div>
+        </header>
+        <main className="container mx-auto py-6">
+          <FavouriteProvider>{children}</FavouriteProvider>
+        </main>
+      </body>
     </html>
   );
 }

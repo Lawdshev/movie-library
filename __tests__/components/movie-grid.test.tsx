@@ -2,7 +2,6 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import MoviesGrid from "@/components/movie-grid"; // Adjust the path as necessary
 import { IMovie } from "@/utils/types";
-import MovieCard from "@/components/movie-card";
 
 // Mock the MovieCard component
 jest.mock("../../src/components/movie-card", () => ({

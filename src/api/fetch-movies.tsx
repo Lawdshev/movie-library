@@ -1,7 +1,7 @@
 import { IGetCast, IGetMovies, IMovie } from "@/utils/types";
 
-const API_URL = "https://api.themoviedb.org/3";
-const API_KEY = "0eaae2146624836f2825bc2d4154ad6e";
+const API_URL = process.env.API_URL;
+const API_KEY = process.env.API_KEY;
 
 export async function fetchMovieDetails(id: string): Promise<IMovie> {
   const res = await fetch(

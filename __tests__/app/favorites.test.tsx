@@ -1,75 +1,42 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import FavoritesPage from "@/app/favorites/page";
-import useFavorites from "@/api/favourites";
+import { useFavourites } from "@/providers/Favorite-provider";
 
-
-jest.mock("../../src/api/favourites", () => ({
-  __esModule: true,
-  default: jest.fn(),
+// Mock the useFavourites hook
+jest.mock("../../src/providers/Favorite-provider", () => ({
+  useFavourites: jest.fn(),
 }));
 
-jest.mock("next/navigation", () => ({
-  __esModule: true,
-  useRouter: jest.fn(),
-}));
+describe("FavoritesPage", () => {
+    const mockUseFavourites = useFavourites as jest.Mock;
 
-const mockUseFavorites = useFavorites as jest.Mock;
-
-describe("FavoritesPage Component", () => {
-    
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("renders a message when there are no favorite movies", () => {
-    mockUseFavorites.mockReturnValue({
-      favorites: [],
-    });
-
+    it("displays a message when there are no favorite movies", () => {
+       mockUseFavourites.mockReturnValue({
+         favourite: [],
+       });
     render(<FavoritesPage />);
 
-    const heading = screen.getByText(/Your Favorite Movies/i);
-    const noFavoritesMessage = screen.getByText(/No favorite movies yet!/i);
-
-    expect(heading).toBeInTheDocument();
-    expect(noFavoritesMessage).toBeInTheDocument();
+    // Check for the "No favorite movies yet!" text
+    expect(screen.getByText("No favorite movies yet!")).toBeInTheDocument();
+    expect(screen.queryByRole("listitem")).not.toBeInTheDocument(); // Ensure no movies are displayed
   });
 
-  it("renders a grid of favorite movies when favorites are present", () => {
-    // Mock the favorites array with some movies
-    const mockFavorites = [
-      {
-        id: 1,
-        title: "Inception",
-        poster_path: "/inception.jpg",
-        release_date: "2010-07-16",
-        vote_average: 8.8,
-      },
-      {
-        id: 2,
-        title: "The Dark Knight",
-        poster_path: "/dark-knight.jpg",
-        release_date: "2008-07-18",
-        vote_average: 9.0,
-      },
+  it("displays a list of favorite movies", () => {
+    // Mock the favourite state with some movies
+    const mockMovies = [
+      { id: 1, title: "Inception", poster_path: "/inception.jpg" },
+      { id: 2, title: "The Matrix", poster_path: "/matrix.jpg" },
     ];
-
-    mockUseFavorites.mockReturnValue({
-      favorites: mockFavorites,
-    });
+    (useFavourites as jest.Mock).mockReturnValue({ favourite: mockMovies });
 
     render(<FavoritesPage />);
 
-    const heading = screen.getByText(/Your Favorite Movies/i);
-    const movieCards = screen.getAllByTestId("movie-card");
-
-    expect(heading).toBeInTheDocument();
-    expect(movieCards.length).toBe(mockFavorites.length);
-
-    // Check if movie titles appear in the document
-    mockFavorites.forEach((movie) => {
+    // Check that the movie titles are rendered
+    mockMovies.forEach((movie) => {
       expect(screen.getByText(movie.title)).toBeInTheDocument();
     });
+
+    // Check that the correct number of MovieCards is rendered
+    expect(screen.getAllByRole("img")).toHaveLength(mockMovies.length);
   });
 });

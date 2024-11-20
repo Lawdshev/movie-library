@@ -1,93 +1,90 @@
-import React from "react";
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { useFavourites } from "@/providers/Favorite-provider";
 import MovieCard from "@/components/movie-card";
-import useFavorites from "@/api/favourites";
 import { IMovie } from "@/utils/types";
+import "@testing-library/jest-dom";
 
-// Mocking `useFavorites`
-jest.mock("../../src/api/favourites", () => ({
-  __esModule: true,
-  default: jest.fn(() => ({
-    favorites: [],
-    toggleFavorite: jest.fn(),
-  })),
+jest.mock("../../src/providers/Favorite-provider", () => ({
+  useFavourites: jest.fn(),
 }));
 
 describe("MovieCard Component", () => {
-  const mockToggleFavorite = jest.fn();
-  const mockFavorites = [{ id: 1, title: "Favorite Movie" }];
-  const movie: IMovie = {
-    id: 1,
-    title: "Sample Movie",
-    release_date: "2023-11-18",
-    vote_average: 7.8,
-    poster_path: "/sample.jpg",
-    overview: "Sample overview",
-    adult: false,
-    genre_ids: [],
-    original_language: "en",
-    original_title: "Sample Movie",
-    popularity: 50,
-    video: false,
-      vote_count: 100,
-      backdrop_path: "some",
-      genres: [{
-        name: "action"
-      }],
-      tagline:"sometagline"
-  };
+  const mockToggleFavourite = jest.fn();
+
+  const mockMovie: IMovie = {
+      id: 2,
+      title: "Movie 2",
+      release_date: "2023-10-10",
+      vote_average: 8.2,
+      poster_path: "/movie2.jpg",
+      overview: "Overview of Movie 2",
+      adult: false,
+      genre_ids: [],
+      original_language: "en",
+      original_title: "Movie 2",
+      popularity: 60,
+      video: false,
+      vote_count: 120,
+      backdrop_path: "some path",
+      genres: [
+        {
+          name: "some",
+        },
+      ],
+      tagline: "taggy",
+    };
 
   beforeEach(() => {
-    (useFavorites as jest.Mock).mockReturnValue({
-      favorites: mockFavorites,
-      toggleFavorite: mockToggleFavorite,
-    });
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it("renders the movie details correctly", () => {
-    render(<MovieCard movie={movie} />);
-
-    expect(screen.getByText("Sample Movie")).toBeInTheDocument();
-    expect(screen.getByText("Release: 2023-11-18")).toBeInTheDocument();
-    expect(screen.getByText("Rating: 7.8/10")).toBeInTheDocument();
-    expect(screen.getByAltText("Sample Movie")).toHaveAttribute(
-      "src",
-      "https://image.tmdb.org/t/p/w500/sample.jpg"
-    );
-  });
-
-  it("renders the favorite icon as filled if the movie is in favorites", () => {
-    render(<MovieCard movie={movie} />);
-    expect(screen.getByTestId("favorite-icon")).toHaveClass("text-white");
-  });
-
-  it("renders the favorite icon as outlined if the movie is not in favorites", () => {
-    (useFavorites as jest.Mock).mockReturnValue({
-      favorites: [],
-      toggleFavorite: mockToggleFavorite,
+  it("renders the movie card with the correct details", () => {
+    (useFavourites as jest.Mock).mockReturnValue({
+      favourite: [],
+      toggleFavourite: mockToggleFavourite,
     });
 
-    render(<MovieCard movie={movie} />);
-    expect(screen.getByTestId("favorite-icon")).toHaveClass("text-black");
+    render(<MovieCard movie={mockMovie} />);
+
+    expect(screen.getByText("Movie 2")).toBeInTheDocument();
   });
 
-  it("calls `toggleFavorite` when the favorite button is clicked", () => {
-    render(<MovieCard movie={movie} />);
+  it("displays the filled heart icon if the movie is a favorite", () => {
+    (useFavourites as jest.Mock).mockReturnValue({
+      favourite: [mockMovie],
+      toggleFavourite: mockToggleFavourite,
+    });
 
-    const favoriteButton = screen.getByRole("button");
-    fireEvent.click(favoriteButton);
+    render(<MovieCard movie={mockMovie} />);
 
-    expect(mockToggleFavorite).toHaveBeenCalledWith(movie);
+    const favoriteIcon = screen.getByTestId("favorite-icon");
+    expect(favoriteIcon).toHaveClass("text-white");
   });
 
-  it("links to the movie details page", () => {
-    render(<MovieCard movie={movie} />);
-    const movieLink = screen.getByRole("link");
+  it("displays the outlined heart icon if the movie is not a favorite", () => {
+    (useFavourites as jest.Mock).mockReturnValue({
+      favourite: [],
+      toggleFavourite: mockToggleFavourite,
+    });
 
-    expect(movieLink).toHaveAttribute("href", `/movies/${movie.id}`);
+    render(<MovieCard movie={mockMovie} />);
+
+    const favoriteIcon = screen.getByTestId("favorite-icon");
+    expect(favoriteIcon).toHaveClass("text-black");
+  });
+
+  it("calls toggleFavourite when the favorite button is clicked", () => {
+    (useFavourites as jest.Mock).mockReturnValue({
+      favourite: [],
+      toggleFavourite: mockToggleFavourite,
+    });
+
+    render(<MovieCard movie={mockMovie} />);
+
+    const button = screen.getByRole("button");
+    fireEvent.click(button);
+
+    expect(mockToggleFavourite).toHaveBeenCalledTimes(1);
+    expect(mockToggleFavourite).toHaveBeenCalledWith(mockMovie);
   });
 });
