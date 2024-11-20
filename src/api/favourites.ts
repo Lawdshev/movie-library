@@ -1,50 +1,50 @@
 import { IMovie } from "@/utils/types";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const useFavorites = () => {
-  const [favourite, setFavourite] = useState<IMovie[]>([]);
-  const [loaded,setLoaded] = useState(false)
-  const initialRender = useRef(true);
+  const [loaded, setLoaded] = useState(false);
+    const initialRender = useRef(false)
 
-  useEffect(() => {
-    setLoaded(true)
-    const storedFavourite = localStorage.getItem("favourites");
+    useEffect(() => {
+      if (initialRender.current) {
+        initialRender.current = false;
+        return;
+      }
+    }, []);
+
+  const getFavourites = (): IMovie[] => {
+    setLoaded(false);
+    const storedFavourite = window.localStorage.getItem("favourites");
     if (storedFavourite) {
       const parsedFavourite = JSON.parse(storedFavourite);
-      const uniqueSet = new Set([...favourite, ...parsedFavourite]);
-      setFavourite(Array.from(uniqueSet));
+      setLoaded(true);
+      return parsedFavourite;
     }
     setLoaded(true);
-  }, []);
+    return [];
+  };
 
-  useEffect(() => {
-    setLoaded(true);
-    if (initialRender.current) {
-      initialRender.current = false;
-      return;
-    }
-    window.localStorage.setItem("favourites", JSON.stringify(favourite));
-    setLoaded(true);
-  }, [favourite]);
+  const setFavourites = (movies: IMovie[]) => {
+    return window.localStorage.setItem("favourites", JSON.stringify(movies));
+  };
 
-  useEffect(() => {
-    localStorage.setItem("favourite", JSON.stringify(favourite));
-  }, [favourite]);
-
-  // Add or remove a movie from favorites
   const toggleFavorite = (movie: IMovie) => {
-    const isFavorite = favourite.some((fav) => fav.id === movie.id);
+    let newList: IMovie[] = [];
+    const currentList = getFavourites();
+    const isFavorite = currentList.some((fav) => fav.id === movie.id);
     if (isFavorite) {
-      setFavourite(favourite.filter((fav) => fav.id !== movie.id));
+      newList = currentList.filter((mov) => mov.id !== movie.id);
     } else {
-      setFavourite([...favourite, movie]);
+      newList = [...currentList, movie];
     }
+    setFavourites(newList);
   };
 
   return {
-    favorites: favourite,
-    loaded,
+    getFavourites,
+    setFavourites,
     toggleFavorite,
+    loaded,
   };
 };
 

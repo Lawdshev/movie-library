@@ -1,14 +1,24 @@
 "use client"
 import useFavorites from '@/api/favourites';
 import { IMovie } from '@/utils/types';
-import React from 'react'
+import React, {  useMemo, useState } from 'react'
 import { FaHeart, FaRegHeart } from "react-icons/fa"; 
 
+const MovieCard = ({ movie,setHasUpdated }: { movie: IMovie,setHasUpdated?:React.Dispatch<React.SetStateAction<boolean>> }) => {
+  const [updated,setUpdated] = useState(false)
+  const { getFavourites, toggleFavorite } = useFavorites();
 
-const MovieCard = ({ movie }: { movie: IMovie }) => {
-  const { favorites, toggleFavorite } = useFavorites();
+  const isFavorite = useMemo(() => {
+    const favorites = getFavourites()
+     return favorites.some((fav) => fav.id === movie.id);
+  }, [updated]) 
 
-    const isFavorite = favorites.some((fav) => fav.id === movie.id);
+  const handleFavorite = () => {
+    toggleFavorite(movie);
+    setUpdated(!updated);
+    setHasUpdated?.(!updated)
+  }
+  
   return (
     <div
       key={movie.id}
@@ -28,7 +38,7 @@ const MovieCard = ({ movie }: { movie: IMovie }) => {
         </p>
       </a>
       <button
-        onClick={() => toggleFavorite(movie)}
+        onClick={handleFavorite}
         className={`mt-2 px-4 py-2 rounded ${
           isFavorite
             ? "bg-red-500 hover:bg-red-600"
