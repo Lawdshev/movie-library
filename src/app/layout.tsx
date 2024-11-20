@@ -30,8 +30,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 text-gray-900`}
       >
-        <header className="p-4 bg-gray-800 text-white">
-          <div className="container mx-auto flex justify-between items-center">
+        <header className="p-4 bg-gray-800 text-white sticky top-0 z-50 shadow-md">
+          <div className="container mx-auto flex flex-col gap-4 md:flex-row md:gap-0 justify-between items-center">
             <h1 className="text-xl font-bold">
               <Link href="/">🎥 Movie Library</Link>
             </h1>
@@ -46,9 +46,12 @@ export default function RootLayout({
           </div>
         </header>
         <main className="container mx-auto py-6">
-          <FavouriteProvider>{children}</FavouriteProvider>
+          <FavouriteProvider>
+            <div className="px-4">{children}</div>
+          </FavouriteProvider>
         </main>
       </body>
     </html>
   );
 }
+

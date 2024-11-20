@@ -42,7 +42,7 @@ export default async function MovieDetails({
             {/* Genres */}
             <div className="mt-6">
               <h2 className="font-bold text-lg">THE GENRES</h2>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex flex-wrap items-center gap-2 mt-2">
                 {movie?.genres?.map((genre) => (
                   <span
                     key={genre.name}
@@ -63,7 +63,7 @@ export default async function MovieDetails({
             {/* casts */}
             <div className="mt-6 w-full">
               <h2 className="font-bold text-xl text-gray-800 mb-4">Cast</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 gap-6">
                 {casts.cast.map((cst) => (
                   <CastCard key={cst.id} cast={cst} />
                 ))}

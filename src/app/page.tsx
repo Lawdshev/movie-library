@@ -17,8 +17,8 @@ export default async function Page(props: {
   const { results, total_pages } = await fetchPopularMovies(currentPage, query);
 
   return (
-    <div>
-      <div className="flex items-center justify-between">
+    <div >
+      <div className="flex flex-col md:flex-row gap-2 pb-3 md:pb-0 items-center justify-between">
         <h1 className="text-3xl font-bold mb-6">Popular Movies</h1>
         <Search />
       </div>
